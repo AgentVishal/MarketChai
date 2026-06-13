@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Chai v1.0 – Building an AI-Powered Indian Market Companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=Inter:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #12100E;
+    --bg-2: #1C1814;
+    --bg-3: #241E18;
+    --chai: #8B5E3C;
+    --chai-light: #B07A52;
+    --chai-dark: #5C3D22;
+    --cream: #F5E6D0;
+    --cream-dim: #C8AD96;
+    --saffron: #E8A838;
+    --teal: #229ED9;
+    --teal-hover: #1A85BF;
+    --text: #E8DDD2;
+    --text-dim: #9E8B7A;
+    --text-faint: #5C5048;
+    --success: #4CAF72;
+    --divider: rgba(139,94,60,0.2);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(18,16,14,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--divider);
+    padding: 0 24px;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: all 0.3s;
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700; font-size: 18px;
+    color: var(--saffron);
+    letter-spacing: 0.02em;
+  }
+  .nav-logo span { color: var(--cream-dim); font-weight: 400; font-style: italic; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-links a {
+    color: var(--text-dim); font-size: 13px;
+    padding: 6px 10px; border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover { color: var(--cream); background: rgba(139,94,60,0.15); }
+  .nav-cta {
+    background: var(--teal); color: #fff !important;
+    padding: 7px 16px !important; border-radius: 8px !important;
+    font-weight: 500 !important;
+  }
+  .nav-cta:hover { background: var(--teal-hover) !important; }
+  .progress-bar {
+    position: fixed; top: 60px; left: 0; height: 2px;
+    background: linear-gradient(90deg, var(--chai), var(--saffron));
+    z-index: 1001; width: 0%; transition: width 0.1s;
+  }
+
+  /* ─── SECTIONS ─── */
+  section {
+    position: relative;
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 100px 0 80px;
+    overflow: hidden;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; width: 100%; }
+  .section-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px; letter-spacing: 0.18em;
+    color: var(--chai-light); margin-bottom: 12px;
+    display: block;
+  }
+  h1, h2 {
+    font-family: 'Playfair Display', serif;
+    line-height: 1.15;
+  }
+  h2 { font-size: clamp(32px, 5vw, 54px); color: var(--cream); margin-bottom: 20px; }
+  .lead { font-size: clamp(16px, 2vw, 20px); color: var(--text-dim); max-width: 640px; line-height: 1.8; }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 60% 40%, rgba(139,94,60,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse at 20% 80%, rgba(232,168,56,0.06) 0%, transparent 60%),
+                var(--bg);
+    display: flex; align-items: center;
+    padding-top: 60px;
+  }
+  .hero-inner {
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center; gap: 60px;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(76,175,114,0.12);
+    border: 1px solid rgba(76,175,114,0.3);
+    color: var(--success); font-size: 12px; font-weight: 600;
+    padding: 6px 14px; border-radius: 100px;
+    margin-bottom: 28px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .hero-badge::before {
+    content: ''; width: 7px; height: 7px;
+    background: var(--success); border-radius: 50%;
+    animation: pulse-green 2s infinite;
+  }
+  @keyframes pulse-green {
+    0%,100% { box-shadow: 0 0 0 0 rgba(76,175,114,0.4); }
+    50% { box-shadow: 0 0 0 5px rgba(76,175,114,0); }
+  }
+  .hero-title {
+    font-size: clamp(44px, 7vw, 80px);
+    font-weight: 900; color: var(--cream);
+    line-height: 1.05; margin-bottom: 8px;
+  }
+  .hero-title em { color: var(--saffron); font-style: normal; }
+  .hero-version {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(16px, 2.5vw, 22px);
+    color: var(--chai-light); letter-spacing: 0.12em;
+    margin-bottom: 24px; display: block;
+  }
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 21px);
+    color: var(--text-dim); max-width: 480px; line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .hero-tagline {
+    font-family: 'Playfair Display', serif;
+    font-style: italic; font-size: clamp(15px, 1.8vw, 18px);
+    color: var(--chai-light); margin-bottom: 40px;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--teal); color: #fff;
+    padding: 14px 28px; border-radius: 10px;
+    font-weight: 600; font-size: 15px;
+    text-decoration: none; transition: all 0.25s;
+    border: none; cursor: pointer;
+  }
+  .btn-primary:hover { background: var(--teal-hover); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(34,158,217,0.3); }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent; color: var(--text-dim);
+    padding: 14px 24px; border-radius: 10px;
+    font-weight: 500; font-size: 14px;
+    text-decoration: none; transition: all 0.25s;
+    border: 1px solid var(--divider);
+    margin-left: 12px;
+  }
+  .btn-secondary:hover { border-color: var(--chai); color: var(--cream); }
+
+  /* Chai Cup Animation */
+  .chai-cup-wrap {
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .chai-cup-svg { width: min(380px, 90%); filter: drop-shadow(0 20px 60px rgba(139,94,60,0.3)); }
+  .steam-container { position: absolute; top: 28%; left: 50%; transform: translateX(-50%); }
+  .steam-path {
+    stroke: rgba(245,230,208,0.25); stroke-width: 2.5;
+    fill: none; stroke-linecap: round;
+    animation: steam-rise 3s ease-in-out infinite;
+  }
+  .steam-path:nth-child(2) { animation-delay: 1s; }
+  .steam-path:nth-child(3) { animation-delay: 2s; }
+  @keyframes steam-rise {
+    0% { opacity: 0; transform: translateY(0) scaleX(1); }
+    30% { opacity: 0.7; }
+    100% { opacity: 0; transform: translateY(-50px) scaleX(1.3); }
+  }
+
+  /* ─── PROBLEM ─── */
+  #problem { background: var(--bg-2); }
+  .pain-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px; margin-top: 40px;
+  }
+  .pain-card {
+    background: var(--bg-3); border: 1px solid var(--divider);
+    border-radius: 14px; padding: 24px;
+    transition: all 0.3s;
+  }
+  .pain-card:hover { border-color: var(--chai); transform: translateY(-3px); }
+  .pain-icon { font-size: 28px; margin-bottom: 12px; display: block; }
+  .pain-card h4 { color: var(--cream); font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .pain-card p { color: var(--text-dim); font-size: 13px; line-height: 1.6; }
+
+  .user-pills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 40px; }
+  .user-pill {
+    background: rgba(139,94,60,0.1); border: 1px solid rgba(139,94,60,0.25);
+    color: var(--cream-dim); padding: 8px 16px; border-radius: 100px; font-size: 13px;
+    transition: all 0.2s;
+  }
+  .user-pill:hover { background: rgba(139,94,60,0.2); color: var(--cream); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+
+  /* ─── IDEA ─── */
+  #idea { background: var(--bg); }
+  .philosophy-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 20px; margin-top: 48px;
+  }
+  .phil-card {
+    background: linear-gradient(135deg, var(--bg-3) 0%, rgba(36,30,24,0.5) 100%);
+    border: 1px solid var(--divider);
+    border-radius: 16px; padding: 32px 24px;
+    text-align: center; transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .phil-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(139,94,60,0.06), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .phil-card:hover::before { opacity: 1; }
+  .phil-card:hover { border-color: var(--chai-light); transform: translateY(-4px); }
+  .phil-time {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px; letter-spacing: 0.15em;
+    color: var(--chai-light); margin-bottom: 10px; display: block;
+  }
+  .phil-emoji { font-size: 36px; margin-bottom: 12px; display: block; }
+  .phil-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; color: var(--cream); margin-bottom: 10px;
+  }
+  .phil-card p { color: var(--text-dim); font-size: 14px; line-height: 1.6; }
+
+  /* ─── RESEARCH ─── */
+  #research { background: var(--bg-2); }
+  .compare-table {
+    width: 100%; border-collapse: collapse; margin-top: 40px; border-radius: 12px; overflow: hidden;
+  }
+  .compare-table thead th {
+    padding: 16px 20px; text-align: left;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .compare-table thead th:first-child { background: rgba(80,60,40,0.3); color: var(--text-dim); }
+  .compare-table thead th:nth-child(2) { background: rgba(80,60,40,0.4); color: var(--cream-dim); }
+  .compare-table thead th:nth-child(3) { background: rgba(139,94,60,0.25); color: var(--saffron); }
+  .compare-table tbody td {
+    padding: 14px 20px; font-size: 14px;
+    border-top: 1px solid rgba(139,94,60,0.1);
+  }
+  .compare-table tbody td:first-child { color: var(--text-dim); font-weight: 500; }
+  .compare-table tbody td:nth-child(2) { color: var(--text-faint); background: rgba(80,60,40,0.1); }
+  .compare-table tbody td:nth-child(3) { color: var(--cream); background: rgba(139,94,60,0.08); }
+  .compare-table tbody tr:hover td { background: rgba(139,94,60,0.06); }
+  .tag-yes { color: var(--success); font-weight: 600; }
+  .tag-no { color: #E57373; }
+
+  /* ─── EVOLUTION TIMELINE ─── */
+  #evolution { background: var(--bg); }
+  .timeline {
+    position: relative; margin-top: 48px; padding-left: 36px;
+  }
+  .timeline::before {
+    content: ''; position: absolute; left: 10px; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--chai) 0%, var(--saffron) 100%);
+  }
+  .tl-item {
+    position: relative; margin-bottom: 40px;
+    opacity: 0; transform: translateX(-20px);
+    transition: all 0.6s ease;
+  }
+  .tl-item.visible { opacity: 1; transform: translateX(0); }
+  .tl-dot {
+    position: absolute; left: -41px; top: 4px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--chai); border: 3px solid var(--bg);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tl-dot.active { background: var(--saffron); box-shadow: 0 0 12px rgba(232,168,56,0.4); }
+  .tl-version {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.1em; font-size: 12px;
+    color: var(--chai-light); margin-bottom: 6px; display: block;
+  }
+  .tl-item h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; color: var(--cream); margin-bottom: 8px;
+  }
+  .tl-item p { color: var(--text-dim); font-size: 14px; max-width: 560px; }
+  .tl-problems {
+    margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .tl-tag {
+    font-size: 12px; padding: 4px 12px; border-radius: 100px;
+    background: rgba(229,115,115,0.1); border: 1px solid rgba(229,115,115,0.25);
+    color: #E57373;
+  }
+  .tl-tag.good {
+    background: rgba(76,175,114,0.1); border-color: rgba(76,175,114,0.25);
+    color: var(--success);
+  }
+
+  /* ─── TECH STACK ─── */
+  #tech { background: var(--bg-2); }
+  .stack-flow {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 0; margin-top: 48px;
+  }
+  .stack-node {
+    background: var(--bg-3); border: 1px solid var(--divider);
+    border-radius: 14px; padding: 20px 32px;
+    min-width: 280px; text-align: center;
+    transition: all 0.3s; position: relative;
+    opacity: 0; transform: scale(0.95);
+    transition: all 0.5s ease;
+  }
+  .stack-node.visible { opacity: 1; transform: scale(1); }
+  .stack-node:hover { border-color: var(--chai); background: rgba(36,30,24,0.9); }
+  .stack-node-icon { font-size: 24px; margin-bottom: 6px; display: block; }
+  .stack-node h4 { color: var(--cream); font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .stack-node p { color: var(--text-dim); font-size: 13px; }
+  .stack-node.highlight { border-color: rgba(232,168,56,0.4); background: rgba(232,168,56,0.04); }
+  .stack-arrow {
+    width: 2px; height: 32px; background: var(--divider);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .stack-arrow::after {
+    content: '▼'; position: absolute; bottom: -2px;
+    color: var(--chai); font-size: 10px;
+  }
+
+  /* ─── WORKFLOWS ─── */
+  #workflows { background: var(--bg); }
+  .chai-editions {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 20px; margin-top: 48px;
+  }
+  .edition-card {
+    border-radius: 18px; padding: 36px 28px;
+    position: relative; overflow: hidden;
+    transition: all 0.3s;
+  }
+  .edition-card::before {
+    content: ''; position: absolute; inset: 0;
+    border-radius: 18px;
+    border: 1px solid rgba(139,94,60,0.2);
+    pointer-events: none;
+  }
+  .edition-card:hover { transform: translateY(-6px); }
+  .edition-card.morning { background: linear-gradient(140deg, rgba(232,168,56,0.08), rgba(36,30,24,0.8)); }
+  .edition-card.afternoon { background: linear-gradient(140deg, rgba(139,94,60,0.12), rgba(36,30,24,0.8)); }
+  .edition-card.closing { background: linear-gradient(140deg, rgba(34,158,217,0.08), rgba(36,30,24,0.8)); }
+  .edition-emoji { font-size: 48px; margin-bottom: 16px; display: block; }
+  .edition-time {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.12em; font-size: 14px;
+    color: var(--chai-light); margin-bottom: 8px; display: block;
+  }
+  .edition-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px; color: var(--cream); margin-bottom: 12px;
+  }
+  .edition-card p { color: var(--text-dim); font-size: 14px; line-height: 1.7; }
+  .edition-question {
+    margin-top: 16px; padding: 14px 16px;
+    background: rgba(0,0,0,0.2); border-radius: 10px;
+    font-style: italic; font-size: 14px; color: var(--cream-dim);
+    border-left: 3px solid var(--chai);
+  }
+
+  /* ─── BUILD PROCESS ─── */
+  #build { background: var(--bg-2); }
+  .build-steps {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px; margin-top: 40px;
+  }
+  .build-step {
+    background: var(--bg-3); border: 1px solid var(--divider);
+    border-radius: 12px; padding: 20px;
+    transition: all 0.3s;
+    opacity: 0; transform: translateY(16px);
+  }
+  .build-step.visible { opacity: 1; transform: translateY(0); }
+  .build-step:hover { border-color: var(--chai-light); }
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px; color: var(--chai);
+    line-height: 1; margin-bottom: 8px; display: block;
+  }
+  .build-step h4 { color: var(--cream); font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .build-step p { color: var(--text-dim); font-size: 12px; line-height: 1.5; }
+
+  /* ─── DEBUGGING ─── */
+  #debugging { background: var(--bg); }
+  .debug-items {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px; margin-top: 40px;
+  }
+  .debug-card {
+    background: var(--bg-3); border: 1px solid var(--divider);
+    border-radius: 14px; padding: 24px; transition: all 0.3s;
+  }
+  .debug-card:hover { border-color: var(--chai); }
+  .debug-problem {
+    display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px;
+  }
+  .badge-problem {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    padding: 3px 9px; border-radius: 100px; text-transform: uppercase;
+    background: rgba(229,115,115,0.12); color: #E57373;
+    border: 1px solid rgba(229,115,115,0.25); white-space: nowrap;
+    margin-top: 2px;
+  }
+  .badge-fix {
+    background: rgba(76,175,114,0.12); color: var(--success);
+    border-color: rgba(76,175,114,0.25);
+  }
+  .debug-card h4 { color: var(--cream); font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .debug-card p { color: var(--text-dim); font-size: 13px; line-height: 1.6; }
+  .debug-arrow {
+    color: var(--chai); font-size: 18px; margin: 10px 0;
+    display: block; text-align: center;
+  }
+  .lessons {
+    margin-top: 48px; padding: 32px;
+    background: linear-gradient(135deg, rgba(139,94,60,0.08), rgba(36,30,24,0.5));
+    border: 1px solid rgba(139,94,60,0.25); border-radius: 16px;
+  }
+  .lessons h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; color: var(--cream); margin-bottom: 20px;
+  }
+  .lessons-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+  .lesson-item { display: flex; align-items: flex-start; gap: 10px; }
+  .lesson-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+  .lesson-item p { color: var(--text-dim); font-size: 13px; line-height: 1.6; }
+
+  /* ─── TESTING ─── */
+  #testing { background: var(--bg-2); }
+  .test-checklist {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px; margin-top: 40px;
+  }
+  .test-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px; border-radius: 10px;
+    background: var(--bg-3); border: 1px solid var(--divider);
+    opacity: 0; transform: translateX(-10px);
+    transition: all 0.4s;
+  }
+  .test-item.visible { opacity: 1; transform: translateX(0); }
+  .test-item .check {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(76,175,114,0.15); border: 2px solid var(--success);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: var(--success); font-size: 11px; font-weight: 700;
+  }
+  .test-item span { color: var(--text); font-size: 14px; }
+  .prompt-evolution {
+    margin-top: 40px; display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px;
+  }
+  .prompt-v {
+    padding: 16px; border-radius: 10px; text-align: center;
+    border: 1px solid var(--divider); background: var(--bg-3);
+    transition: all 0.3s;
+  }
+  .prompt-v.final { border-color: var(--saffron); background: rgba(232,168,56,0.06); }
+  .prompt-v-num {
+    font-family: 'Bebas Neue', sans-serif; font-size: 28px;
+    color: var(--chai); display: block; margin-bottom: 4px;
+  }
+  .prompt-v.final .prompt-v-num { color: var(--saffron); }
+  .prompt-v span { color: var(--text-dim); font-size: 12px; }
+
+  /* ─── ARCHITECTURE ─── */
+  #architecture { background: var(--bg); }
+  .arch-visual {
+    display: flex; flex-direction: column; align-items: center;
+    margin-top: 48px; gap: 0;
+  }
+  .arch-node {
+    display: flex; align-items: center; gap: 16px;
+    background: linear-gradient(135deg, var(--bg-3), rgba(36,30,24,0.6));
+    border: 1px solid var(--divider); border-radius: 14px;
+    padding: 18px 32px; min-width: 320px;
+    transition: all 0.3s;
+  }
+  .arch-node:hover { border-color: var(--chai-light); transform: scale(1.02); }
+  .arch-node.highlight-node { border-color: var(--saffron); background: linear-gradient(135deg, rgba(232,168,56,0.08), rgba(36,30,24,0.8)); }
+  .arch-node-icon { font-size: 28px; flex-shrink: 0; }
+  .arch-node-info h4 { color: var(--cream); font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+  .arch-node-info p { color: var(--text-dim); font-size: 13px; }
+  .arch-connector {
+    width: 2px; height: 36px;
+    background: linear-gradient(180deg, var(--chai), var(--saffron));
+    position: relative;
+  }
+  .arch-connector::after {
+    content: '▼'; position: absolute; bottom: -4px; left: 50%;
+    transform: translateX(-50%);
+    color: var(--saffron); font-size: 10px;
+  }
+  .arch-quote {
+    margin-top: 48px; padding: 32px 40px;
+    border-left: 4px solid var(--saffron);
+    background: rgba(232,168,56,0.04);
+    border-radius: 0 14px 14px 0;
+  }
+  .arch-quote blockquote {
+    font-family: 'Playfair Display', serif;
+    font-style: italic; font-size: clamp(18px, 2.5vw, 24px);
+    color: var(--cream); line-height: 1.5;
+  }
+
+  /* ─── DIFFERENTIATOR ─── */
+  #differentiator { background: var(--bg-2); }
+  .diff-table {
+    width: 100%; border-collapse: collapse; margin-top: 40px; border-radius: 14px; overflow: hidden;
+  }
+  .diff-table th {
+    padding: 16px 24px; text-align: left;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .diff-table th:first-child { background: rgba(40,35,30,0.8); color: var(--text-faint); }
+  .diff-table th.col-old { background: rgba(80,60,40,0.3); color: var(--text-dim); }
+  .diff-table th.col-new { background: rgba(139,94,60,0.3); color: var(--saffron); }
+  .diff-table td {
+    padding: 16px 24px; font-size: 14px;
+    border-top: 1px solid rgba(139,94,60,0.08);
+  }
+  .diff-table td:first-child { color: var(--text-dim); font-weight: 500; }
+  .diff-table td.col-old { background: rgba(80,60,40,0.08); color: var(--text-faint); }
+  .diff-table td.col-new { background: rgba(139,94,60,0.06); color: var(--cream); font-weight: 500; }
+
+  /* ─── IMPACT ─── */
+  #impact { background: var(--bg); }
+  .impact-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px; margin-top: 48px;
+  }
+  .impact-card {
+    padding: 32px 28px; border-radius: 16px;
+    background: linear-gradient(140deg, var(--bg-3), rgba(36,30,24,0.5));
+    border: 1px solid var(--divider); transition: all 0.3s; text-align: center;
+  }
+  .impact-card:hover { border-color: var(--chai-light); transform: translateY(-4px); }
+  .impact-icon { font-size: 40px; margin-bottom: 16px; display: block; }
+  .impact-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; color: var(--cream); margin-bottom: 10px;
+  }
+  .impact-card p { color: var(--text-dim); font-size: 14px; line-height: 1.7; }
+
+  /* ─── ROADMAP ─── */
+  #roadmap { background: var(--bg-2); }
+  .roadmap-track {
+    position: relative; margin-top: 48px;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .roadmap-track::before {
+    content: ''; position: absolute; top: 40px; left: 0; right: 0;
+    height: 2px; background: linear-gradient(90deg, var(--chai), var(--saffron), rgba(34,158,217,0.5));
+  }
+  .roadmap-item { text-align: center; padding-top: 20px; }
+  .roadmap-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--chai); border: 3px solid var(--bg-2);
+    margin: 0 auto 16px; position: relative; z-index: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .roadmap-dot.live { background: var(--success); box-shadow: 0 0 16px rgba(76,175,114,0.4); }
+  .roadmap-dot.next { background: var(--saffron); box-shadow: 0 0 16px rgba(232,168,56,0.3); }
+  .roadmap-dot.future { background: var(--teal); opacity: 0.6; }
+  .roadmap-item-num {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.1em; font-size: 12px;
+    color: var(--chai-light); margin-bottom: 6px; display: block;
+  }
+  .roadmap-item h4 { color: var(--cream); font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .roadmap-item p { color: var(--text-dim); font-size: 12px; line-height: 1.5; }
+
+  /* ─── LAUNCH / CTA ─── */
+  #launch {
+    background: radial-gradient(ellipse at 50% 30%, rgba(232,168,56,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse at 80% 80%, rgba(139,94,60,0.08) 0%, transparent 60%),
+                var(--bg);
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .launch-inner { position: relative; z-index: 2; }
+  .launch-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(76,175,114,0.12); border: 1px solid rgba(76,175,114,0.3);
+    color: var(--success); font-size: 12px; font-weight: 700;
+    padding: 8px 18px; border-radius: 100px; margin-bottom: 32px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .launch-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 6vw, 68px); font-weight: 900;
+    color: var(--cream); margin-bottom: 12px; line-height: 1.1;
+  }
+  .launch-title span { color: var(--saffron); }
+  .launch-sub { color: var(--text-dim); font-size: clamp(16px, 2vw, 20px); margin-bottom: 48px; }
+  .editions-row {
+    display: flex; justify-content: center; gap: 20px;
+    margin: 40px 0; flex-wrap: wrap;
+  }
+  .edition-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg-3); border: 1px solid var(--divider);
+    border-radius: 12px; padding: 14px 24px; font-size: 15px;
+    color: var(--cream); transition: all 0.25s;
+  }
+  .edition-pill:hover { border-color: var(--chai); background: rgba(139,94,60,0.1); }
+  .edition-pill span:first-child { font-size: 22px; }
+  .launch-url {
+    font-family: 'Playfair Display', serif;
+    font-style: italic; font-size: clamp(18px, 2.5vw, 26px);
+    color: var(--chai-light); margin-bottom: 32px;
+  }
+  .launch-url a { color: var(--saffron); text-decoration: none; }
+  .launch-url a:hover { text-decoration: underline; }
+  .launch-cta {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--teal); color: #fff;
+    padding: 18px 40px; border-radius: 14px;
+    font-weight: 700; font-size: 18px;
+    text-decoration: none; transition: all 0.3s;
+    box-shadow: 0 0 0 0 rgba(34,158,217,0.4);
+  }
+  .launch-cta:hover {
+    background: var(--teal-hover); transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(34,158,217,0.35), 0 0 0 8px rgba(34,158,217,0.08);
+  }
+  #confetti-canvas { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--bg); border-top: 1px solid var(--divider);
+    padding: 32px; text-align: center;
+  }
+  .footer-line { color: var(--text-faint); font-size: 13px; line-height: 1.8; }
+  .footer-line a { color: var(--chai-light); text-decoration: none; }
+  .footer-status {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(76,175,114,0.1); border: 1px solid rgba(76,175,114,0.2);
+    color: var(--success); font-size: 11px; font-weight: 600;
+    padding: 4px 12px; border-radius: 100px; margin-bottom: 12px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .footer-status::before { content: ''; width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: pulse-green 2s infinite; }
+
+  /* ─── REVEAL ANIMATIONS ─── */
+  .reveal {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .chai-cup-wrap { display: none; }
+    .philosophy-cards { grid-template-columns: 1fr; }
+    .chai-editions { grid-template-columns: 1fr; }
+    .debug-items { grid-template-columns: 1fr; }
+    .roadmap-track { grid-template-columns: 1fr 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    nav .nav-links { display: none; }
+    .roadmap-track::before { display: none; }
+  }
+  @media (max-width: 600px) {
+    .roadmap-track { grid-template-columns: 1fr; }
+    .container { padding: 0 20px; }
+    .arch-node { min-width: unset; padding: 14px 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .tl-item, .build-step, .test-item, .reveal, .stack-node { opacity: 1 !important; transform: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Market <span>Chai</span> ☕</div>
+  <div class="nav-links">
+    <a href="#problem">Problem</a>
+    <a href="#idea">Idea</a>
+    <a href="#tech">Tech</a>
+    <a href="#workflows">Editions</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#launch" class="nav-cta">Join →</a>
+  </div>
+</nav>
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-badge">🟢 Officially Live</div>
+        <h1 class="hero-title">Market <em>Chai</em></h1>
+        <span class="hero-version">v 1 . 0</span>
+        <p class="hero-sub">The Indian market, explained in 2 minutes — every morning, afternoon, and evening.</p>
+        <p class="hero-tagline">"Like a trusted friend explaining the news over chai."</p>
+        <div>
+          <a href="https://t.me/MarketChai" target="_blank" class="btn-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+            Join on Telegram
+          </a>
+          <a href="#problem" class="btn-secondary">Read the story ↓</a>
+        </div>
+      </div>
+      <div class="chai-cup-wrap">
+        <!-- Inline SVG chai cup -->
+        <svg class="chai-cup-svg" viewBox="0 0 380 420" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="cupGrad" cx="50%" cy="40%" r="60%">
+              <stop offset="0%" stop-color="#8B5E3C"/>
+              <stop offset="100%" stop-color="#3D2010"/>
+            </radialGradient>
+            <radialGradient id="teaGrad" cx="50%" cy="30%" r="60%">
+              <stop offset="0%" stop-color="#C47A35"/>
+              <stop offset="100%" stop-color="#7A3E10"/>
+            </radialGradient>
+            <radialGradient id="plateGrad" cx="50%" cy="40%" r="60%">
+              <stop offset="0%" stop-color="#A0724A"/>
+              <stop offset="100%" stop-color="#4A2810"/>
+            </radialGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+              <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Saucer -->
+          <ellipse cx="190" cy="360" rx="120" ry="22" fill="url(#plateGrad)" opacity="0.9"/>
+          <ellipse cx="190" cy="360" rx="100" ry="16" fill="none" stroke="rgba(245,230,208,0.15)" stroke-width="1"/>
+          <!-- Handle shadow -->
+          <ellipse cx="305" cy="290" rx="20" ry="30" fill="rgba(0,0,0,0.2)" rx="16"/>
+          <!-- Cup body -->
+          <path d="M 100 220 L 115 350 Q 115 370 140 370 L 240 370 Q 265 370 265 350 L 280 220 Z" fill="url(#cupGrad)"/>
+          <!-- Cup sheen -->
+          <path d="M 108 230 L 120 340 Q 120 358 142 358 L 152 358 L 138 230 Z" fill="rgba(245,230,208,0.06)"/>
+          <!-- Tea surface -->
+          <ellipse cx="190" cy="222" rx="90" ry="18" fill="url(#teaGrad)"/>
+          <ellipse cx="190" cy="222" rx="90" ry="18" fill="none" stroke="rgba(232,168,56,0.3)" stroke-width="1"/>
+          <!-- Tea surface shimmer -->
+          <ellipse cx="175" cy="219" rx="30" ry="6" fill="rgba(245,230,208,0.12)"/>
+          <!-- Handle -->
+          <path d="M 275 255 Q 330 255 330 290 Q 330 325 275 325" fill="none" stroke="url(#cupGrad)" stroke-width="22" stroke-linecap="round"/>
+          <path d="M 275 255 Q 325 255 325 290 Q 325 325 275 325" fill="none" stroke="rgba(245,230,208,0.1)" stroke-width="8" stroke-linecap="round"/>
+          <!-- Bottom ring -->
+          <ellipse cx="190" cy="350" rx="75" ry="10" fill="rgba(30,15,5,0.4)"/>
+          <!-- Text on cup -->
+          <text x="190" y="295" text-anchor="middle" font-family="Playfair Display, serif" font-style="italic" font-size="16" fill="rgba(245,230,208,0.25)">Market Chai</text>
+          <text x="190" y="315" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="11" letter-spacing="3" fill="rgba(232,168,56,0.3)">v1.0</text>
+          <!-- Glow under -->
+          <ellipse cx="190" cy="362" rx="100" ry="8" fill="rgba(139,94,60,0.15)" filter="url(#glow)"/>
+        </svg>
+        <!-- Steam SVG overlay -->
+        <div class="steam-container">
+          <svg width="100" height="80" viewBox="0 0 100 80">
+            <path class="steam-path" d="M 30 70 Q 20 50 35 35 Q 50 20 40 5" />
+            <path class="steam-path" d="M 50 70 Q 60 50 45 35 Q 30 20 50 5" />
+            <path class="steam-path" d="M 70 70 Q 80 50 65 35 Q 50 20 60 5" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PROBLEM ─── -->
+<section id="problem">
+  <div class="container">
+    <span class="section-label">Section 01 — The Problem</span>
+    <div class="two-col">
+      <div>
+        <h2 class="reveal">Market news was never built for ordinary Indians.</h2>
+        <p class="lead reveal" style="transition-delay:0.1s">Every day, millions of Indians try to make sense of the markets. Most give up before they begin — not because the information doesn't exist, but because none of it was made for them.</p>
+      </div>
+      <div>
+        <div class="pain-grid">
+          <div class="pain-card reveal"><span class="pain-icon">🔡</span><h4>Full of jargon</h4><p>NIFTY, Sensex, circuit breakers, open interest — the language excludes rather than invites.</p></div>
+          <div class="pain-card reveal" style="transition-delay:0.1s"><span class="pain-icon">📊</span><h4>Designed for traders</h4><p>Built by financial professionals, for financial professionals. Everyone else is an afterthought.</p></div>
+          <div class="pain-card reveal" style="transition-delay:0.15s"><span class="pain-icon">⏱️</span><h4>Time-consuming</h4><p>Five apps, three websites, and two newsletters — and you still don't know what happened today.</p></div>
+          <div class="pain-card reveal" style="transition-delay:0.2s"><span class="pain-icon">😵</span><h4>Information overload</h4><p>Hundreds of headlines, zero context. Noise dressed up as signal.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 48px;" class="reveal">
+      <p style="font-family:'Playfair Display',serif; font-style:italic; font-size:18px; color:var(--cream-dim); margin-bottom:20px;">The questions ordinary Indians actually ask:</p>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:32px;">
+        <div style="background:rgba(139,94,60,0.08); border:1px solid rgba(139,94,60,0.2); border-radius:10px; padding:12px 18px; color:var(--cream); font-size:14px; font-style:italic;">"What happened in the market today?"</div>
+        <div style="background:rgba(139,94,60,0.08); border:1px solid rgba(139,94,60,0.2); border-radius:10px; padding:12px 18px; color:var(--cream); font-size:14px; font-style:italic;">"Why should I even care?"</div>
+        <div style="background:rgba(139,94,60,0.08); border:1px solid rgba(139,94,60,0.2); border-radius:10px; padding:12px 18px; color:var(--cream); font-size:14px; font-style:italic;">"Is this important for my SIP?"</div>
+        <div style="background:rgba(139,94,60,0.08); border:1px solid rgba(139,94,60,0.2); border-radius:10px; padding:12px 18px; color:var(--cream); font-size:14px; font-style:italic;">"Can someone just explain this simply?"</div>
+      </div>
+      <p style="color:var(--text-dim); font-size:14px; margin-bottom:16px; letter-spacing:0.04em; text-transform:uppercase; font-weight:600;">Built for:</p>
+      <div class="user-pills">
+        <div class="user-pill">🧑‍💼 Salaried employees</div>
+        <div class="user-pill">📈 SIP investors</div>
+        <div class="user-pill">👪 Parents</div>
+        <div class="user-pill">🏠 Homemakers</div>
+        <div class="user-pill">🎓 College students</div>
+        <div class="user-pill">🌱 Complete beginners</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── IDEA ─── -->
+<section id="idea">
+  <div class="container">
+    <span class="section-label">Section 02 — The Idea</span>
+    <h2 class="reveal">What if the market spoke to you<br><em style="color:var(--saffron)">like a friend?</em></h2>
+    <p class="lead reveal" style="transition-delay:0.1s">Not another stock alert bot. Not another data dashboard. An AI-powered companion that explains Indian business and market news the way you'd explain it to someone over a cup of chai — warm, clear, and actually useful.</p>
+
+    <div class="philosophy-cards" style="margin-top: 48px;">
+      <div class="phil-card reveal">
+        <span class="phil-emoji">☕</span>
+        <span class="phil-time">Morning · 8:30 AM</span>
+        <h3>Prepare me.</h3>
+        <p>Start the day with context. What should you know before the market opens? What's the mood, the news, the thing that matters today?</p>
+      </div>
+      <div class="phil-card reveal" style="transition-delay:0.15s">
+        <span class="phil-emoji">☀️</span>
+        <span class="phil-time">Afternoon · 12:30 PM</span>
+        <h3>Update me.</h3>
+        <p>The market is live. What's happening right now? A quick midday check-in that keeps you informed without pulling you away from your day.</p>
+      </div>
+      <div class="phil-card reveal" style="transition-delay:0.25s">
+        <span class="phil-emoji">🌇</span>
+        <span class="phil-time">Closing Bell · 3:45 PM</span>
+        <h3>Teach me.</h3>
+        <p>The dust has settled. What happened, what it means, and what to carry forward. Education before action. Understanding before investing.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:48px; padding:32px 40px; border-left:4px solid var(--chai); background:rgba(139,94,60,0.04); border-radius:0 14px 14px 0;" class="reveal">
+      <p style="font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(18px,2.5vw,24px); color:var(--cream);">"The goal was never to tell you what to buy.<br>The goal was to make you confident enough to ask better questions."</p>
+      <p style="color:var(--chai-light); font-size:13px; margin-top:12px;">— Market Chai Philosophy</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── RESEARCH ─── -->
+<section id="research">
+  <div class="container">
+    <span class="section-label">Section 03 — Research & Validation</span>
+    <h2 class="reveal">We looked at what existed.<br>And found a gap.</h2>
+    <p class="lead reveal" style="transition-delay:0.1s">The Indian fintech media landscape is full of content. But almost none of it is for the ordinary Indian trying to understand the world around them.</p>
+
+    <table class="compare-table reveal" style="transition-delay:0.2s">
+      <thead>
+        <tr>
+          <th>What We Looked At</th>
+          <th>Traditional Media</th>
+          <th>Market Chai</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Language</td>
+          <td class="col-old tag-no">Jargon-heavy</td>
+          <td class="col-new tag-yes">Plain, conversational</td>
+        </tr>
+        <tr>
+          <td>Target audience</td>
+          <td class="col-old tag-no">Active traders</td>
+          <td class="col-new tag-yes">Everyday Indians</td>
+        </tr>
+        <tr>
+          <td>Delivery format</td>
+          <td class="col-old tag-no">Long articles, scrolling apps</td>
+          <td class="col-new tag-yes">2-minute Telegram updates</td>
+        </tr>
+        <tr>
+          <td>Data density</td>
+          <td class="col-old tag-no">Overloaded</td>
+          <td class="col-new tag-yes">Curated, context-first</td>
+        </tr>
+        <tr>
+          <td>Tone</td>
+          <td class="col-old tag-no">Clinical, impersonal</td>
+          <td class="col-new tag-yes">Warm, like a friend</td>
+        </tr>
+        <tr>
+          <td>Primary goal</td>
+          <td class="col-old tag-no">Traffic & ad revenue</td>
+          <td class="col-new tag-yes">Financial literacy</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:28px; padding:20px 24px; background:rgba(232,168,56,0.05); border:1px solid rgba(232,168,56,0.15); border-radius:12px;" class="reveal">
+      <p style="color:var(--saffron); font-weight:600; font-size:14px; margin-bottom:4px;">The opportunity:</p>
+      <p style="color:var(--text-dim); font-size:14px;">No one had built a media product for the hundreds of millions of ordinary Indians who hold mutual funds, have SIPs, and care about the economy — but don't have time or background for traditional financial media.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── EVOLUTION ─── -->
+<section id="evolution">
+  <div class="container">
+    <span class="section-label">Section 04 — Evolution</span>
+    <h2 class="reveal">From a half-baked bot<br>to a working media channel.</h2>
+    <p class="lead reveal" style="transition-delay:0.1s">The path from idea to product was not a straight line. It was a series of honest failures that pointed the way forward.</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <span class="tl-version">VERSION 0</span>
+        <h3>The Direct Message Bot</h3>
+        <p>The original idea — a Telegram bot that sends market updates directly to users. Elegant in theory, painful in practice.</p>
+        <div class="tl-problems">
+          <span class="tl-tag">Needs Chat IDs</span>
+          <span class="tl-tag">Subscriber database required</span>
+          <span class="tl-tag">Scaling complexity</span>
+          <span class="tl-tag">Manual onboarding</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot active"></div>
+        <span class="tl-version">VERSION 1.0</span>
+        <h3>The Telegram Channel</h3>
+        <p>One insight changed everything: use a Telegram Channel, not direct messages. The bot becomes the invisible publisher. The channel becomes the product.</p>
+        <div class="tl-problems">
+          <span class="tl-tag good">Unlimited subscribers</span>
+          <span class="tl-tag good">No database needed</span>
+          <span class="tl-tag good">Instantly scalable</span>
+          <span class="tl-tag good">Professional & shareable</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot active"></div>
+        <span class="tl-version">PRODUCTION</span>
+        <h3>Live & Shipping Daily</h3>
+        <p>Three automated editions. Every single market day. Fully hands-off once configured. A media product that runs itself.</p>
+        <div class="tl-problems">
+          <span class="tl-tag good">3 daily editions</span>
+          <span class="tl-tag good">Fully automated</span>
+          <span class="tl-tag good">AI-powered summaries</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TECH STACK ─── -->
+<section id="tech">
+  <div class="container">
+    <span class="section-label">Section 05 — Technology Stack</span>
+    <div class="two-col" style="align-items:start; gap:80px;">
+      <div>
+        <h2 class="reveal">Simple tools.<br>Surprisingly powerful result.</h2>
+        <p class="lead reveal" style="transition-delay:0.1s; margin-bottom:32px;">No custom backend. No engineering team. Just a set of well-chosen tools connected with intention.</p>
+        <div class="stack-flow">
+          <div class="stack-node reveal">
+            <span class="stack-node-icon">📰</span>
+            <h4>RSS Feeds</h4>
+            <p>Live Indian market news from trusted sources, collected continuously</p>
+          </div>
+          <div class="stack-arrow"></div>
+          <div class="stack-node reveal highlight">
+            <span class="stack-node-icon">⚙️</span>
+            <h4>n8n on Railway</h4>
+            <p>The automation engine — orchestrates the entire workflow on schedule</p>
+          </div>
+          <div class="stack-arrow"></div>
+          <div class="stack-node reveal">
+            <span class="stack-node-icon">🧠</span>
+            <h4>Groq AI (Llama 3.3 70B)</h4>
+            <p>Summarizes, simplifies, and explains — the intelligence layer</p>
+          </div>
+          <div class="stack-arrow"></div>
+          <div class="stack-node reveal">
+            <span class="stack-node-icon">🤖</span>
+            <h4>Telegram Bot (invisible)</h4>
+            <p>@MarketChai_bot publishes to the channel silently, automatically</p>
+          </div>
+          <div class="stack-arrow"></div>
+          <div class="stack-node reveal highlight">
+            <span class="stack-node-icon">📣</span>
+            <h4>Telegram Channel</h4>
+            <p>@MarketChai — the public face, the product, what subscribers see</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="padding:28px; background:var(--bg-3); border:1px solid var(--divider); border-radius:16px; margin-top:16px;" class="reveal">
+          <p style="font-family:'Bebas Neue',sans-serif; letter-spacing:0.12em; font-size:12px; color:var(--chai-light); margin-bottom:20px;">WHAT EACH TOOL DOES</p>
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div style="display:flex; gap:14px;">
+              <span style="font-size:20px; flex-shrink:0;">📰</span>
+              <div><p style="color:var(--cream); font-size:13px; font-weight:600; margin-bottom:3px;">RSS Feeds</p><p style="color:var(--text-dim); font-size:13px;">Indian market news sources — the raw material</p></div>
+            </div>
+            <div style="display:flex; gap:14px;">
+              <span style="font-size:20px; flex-shrink:0;">⚙️</span>
+              <div><p style="color:var(--cream); font-size:13px; font-weight:600; margin-bottom:3px;">n8n</p><p style="color:var(--text-dim); font-size:13px;">No-code automation engine. The conductor of the orchestra.</p></div>
+            </div>
+            <div style="display:flex; gap:14px;">
+              <span style="font-size:20px; flex-shrink:0;">🧠</span>
+              <div><p style="color:var(--cream); font-size:13px; font-weight:600; margin-bottom:3px;">Groq (llama-3.3-70b-versatile)</p><p style="color:var(--text-dim); font-size:13px;">One of the fastest LLMs available. Turns raw news into chai-worthy summaries.</p></div>
+            </div>
+            <div style="display:flex; gap:14px;">
+              <span style="font-size:20px; flex-shrink:0;">🚂</span>
+              <div><p style="color:var(--cream); font-size:13px; font-weight:600; margin-bottom:3px;">Railway</p><p style="color:var(--text-dim); font-size:13px;">Hosts n8n. Zero DevOps. Just a URL and a deploy button.</p></div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:16px; padding:20px 24px; background:rgba(232,168,56,0.05); border:1px solid rgba(232,168,56,0.15); border-radius:12px;" class="reveal">
+          <p style="color:var(--saffron); font-size:13px; font-weight:600; margin-bottom:6px;">The key insight:</p>
+          <p style="color:var(--text-dim); font-size:13px; line-height:1.7;">No single tool here is novel. The art was in connecting them in the right order, with the right prompts, to produce something that felt genuinely useful.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WORKFLOWS ─── -->
+<section id="workflows">
+  <div class="container">
+    <span class="section-label">Section 06 — The Three Editions</span>
+    <h2 class="reveal">Three cups of chai.<br>Three different conversations.</h2>
+    <p class="lead reveal" style="transition-delay:0.1s">Each edition is designed for a different moment in the reader's day — and a different state of mind.</p>
+    <div class="chai-editions">
+      <div class="edition-card morning reveal">
+        <span class="edition-emoji">☕</span>
+        <span class="edition-time">Morning Chai · 8:30 AM</span>
+        <h3>Before the bell rings</h3>
+        <p>Start your market day with a warm, clear overview. What happened overnight. What to watch. What mood the market is likely in.</p>
+        <div class="edition-question">"What should I know before the market opens today?"</div>
+      </div>
+      <div class="edition-card afternoon reveal" style="transition-delay:0.15s">
+        <span class="edition-emoji">☀️</span>
+        <span class="edition-time">Afternoon Chai · 12:30 PM</span>
+        <h3>Midday check-in</h3>
+        <p>Markets have been open for hours. What's moving? What surprised people? A quick midday pulse — just enough to stay in the loop without a deep dive.</p>
+        <div class="edition-question">"What's happening right now and should I care?"</div>
+      </div>
+      <div class="edition-card closing reveal" style="transition-delay:0.25s">
+        <span class="edition-emoji">🌇</span>
+        <span class="edition-time">Closing Bell · 3:45 PM</span>
+        <h3>Day's final chapter</h3>
+        <p>The market closes. Now comes the part that matters most — not just what happened, but what it means. The edition that builds financial intuition, not just awareness.</p>
+        <div class="edition-question">"What happened today, and what should I remember?"</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── BUILD PROCESS ─── -->
+<section id="build">
+  <div class="container">
+    <span class="section-label">Section 07 — How We Built It</span>
+    <h2 class="reveal">Ten steps from zero to live.</h2>
+    <p class="lead reveal" style="transition-delay:0.1s">This wasn't built by an engineering team. It was built by a designer who refused to wait for a developer.</p>
+    <div class="build-steps">
+      <div class="build-step"><span class="step-num">01</span><h4>Created Telegram Bot</h4><p>@MarketChai_bot — the invisible publisher behind the channel.</p></div>
+      <div class="build-step"><span class="step-num">02</span><h4>Hosted n8n on Railway</h4><p>Deployed the automation engine with a one-click Railway template.</p></div>
+      <div class="build-step"><span class="step-num">03</span><h4>Integrated RSS Feeds</h4><p>Connected Indian market news sources as the content pipeline.</p></div>
+      <div class="build-step"><span class="step-num">04</span><h4>Removed Duplicates</h4><p>Built deduplication logic to avoid redundant headlines.</p></div>
+      <div class="build-step"><span class="step-num">05</span><h4>Formatted Headlines</h4><p>Cleaned and structured the raw RSS output for AI processing.</p></div>
+      <div class="build-step"><span class="step-num">06</span><h4>Connected Groq API</h4><p>Wired up the LLM endpoint. The intelligence layer came online.</p></div>
+      <div class="build-step"><span class="step-num">07</span><h4>Engineered Prompts</h4><p>Four rounds of prompt iteration to find the right voice and format.</p></div>
+      <div class="build-step"><span class="step-num">08</span><h4>Connected Telegram</h4><p>Bot credentials configured. First message published. It worked.</p></div>
+      <div class="build-step"><span class="step-num">09</span><h4>Built Channel Architecture</h4><p>Designed the 3-edition schedule. Morning, afternoon, closing.</p></div>
+      <div class="build-step"><span class="step-num">10</span><h4>Went Live</h4><p>Real subscribers. Real market days. Real Market Chai.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── DEBUGGING ─── -->
+<section id="debugging">
+  <div class="container">
+    <span class="section-label">Section 08 — The Debugging Journey</span>
+    <h2 class="reveal">Nothing worked on the first try.<br>That's how you learn.</h2>
+    <p class="lead reveal" style="transition-delay:0.1s">Every bug was a lesson. Every failed node revealed something the documentation didn't tell us.</p>
+    <div class="debug-items">
+      <div class="debug-card reveal">
+        <div class="debug-problem"><span class="badge-problem">Problem</span><h4>Groq HTTP errors</h4></div>
+        <p style="color:var(--text-dim); font-size:13px; margin-bottom:10px;">The request body format was off. Groq's API was rejecting our calls silently.</p>
+        <span class="debug-arrow">↓</span>
+        <div class="debug-problem"><span class="badge-problem badge-fix">Fixed</span><h4>Adjusted request body format</h4></div>
+        <p style="color:var(--text-dim); font-size:13px;">Matched the exact schema Groq expects. Started working immediately.</p>
+      </div>
+      <div class="debug-card reveal" style="transition-delay:0.1s">
+        <div class="debug-problem"><span class="badge-problem">Problem</span><h4>Messages array errors</h4></div>
+        <p style="color:var(--text-dim); font-size:13px; margin-bottom:10px;">n8n expression syntax was conflicting with how we were building the messages array.</p>
+        <span class="debug-arrow">↓</span>
+        <div class="debug-problem"><span class="badge-problem badge-fix">Fixed</span><h4>Switched to working expression patterns</h4></div>
+        <p style="color:var(--text-dim); font-size:13px;">Reverted to simpler, battle-tested n8n expression formats.</p>
+      </div>
+      <div class="debug-card reveal" style="transition-delay:0.15s">
+        <div class="debug-problem"><span class="badge-problem">Problem</span><h4>Telegram message too long</h4></div>
+        <p style="color:var(--text-dim); font-size:13px; margin-bottom:10px;">The AI was generating summaries that exceeded Telegram's character limit.</p>
+        <span class="debug-arrow">↓</span>
+        <div class="debug-problem"><span class="badge-problem badge-fix">Fixed</span><h4>Refined prompts to reduce output size</h4></div>
+        <p style="color:var(--text-dim); font-size:13px;">Prompted for conciseness explicitly. Now fits Telegram perfectly.</p>
+      </div>
+      <div class="debug-card reveal" style="transition-delay:0.2s">
+        <div class="debug-problem"><span class="badge-problem">Problem</span><h4>Subscribers not receiving messages</h4></div>
+        <p style="color:var(--text-dim); font-size:13px; margin-bottom:10px;">The direct message bot approach had fundamental scaling limitations.</p>
+        <span class="debug-arrow">↓</span>
+        <div class="debug-problem"><span class="badge-problem badge-fix">Fixed</span><h4>Migrated to Telegram Channel</h4></div>
+        <p style="color:var(--text-dim); font-size:13px;">This single insight unlocked the entire product. The channel became the product.</p>
+      </div>
+    </div>
+    <div class="lessons reveal" style="margin-top:40px;">
+      <h3>Lessons Learned the Hard Way</h3>
+      <div class="lessons-grid">
+        <div class="lesson-item"><span class="lesson-icon">🔍</span><p>Read the API docs carefully before assuming your format is correct.</p></div>
+        <div class="lesson-item"><span class="lesson-icon">✂️</span><p>Simplify your architecture before you debug it. Complexity hides bugs.</p></div>
+        <div class="lesson-item"><span class="lesson-icon">🧪</span><p>Test each node individually before wiring the full pipeline.</p></div>
+        <div class="lesson-item"><span class="lesson-icon">💡</span><p>Sometimes the fix isn't technical — it's a product architecture decision.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TESTING ─── -->
+<section id="testing">
+  <div class="container">
+    <span class="section-label">Section 09 — Testing & Validation</span>
+    <h2 class="reveal">Test until it bores you.<br>Then test again.</h2>
+    <p class="lead reveal" style="transition-delay:0.1s">Before any subscriber read Market Chai, it went through dozens of test runs, prompt iterations, and delivery checks.</p>
+    <div class="test-checklist">
+      <div class="test-item"><div class="check">✓</div><span>Manual node-by-node testing</span></div>
+      <div class="test-item"><div class="check">✓</div><span>Telegram connectivity checks</span></div>
+      <div class="test-item"><div class="check">✓</div><span>RSS feed validation</span></div>
+      <div class="test-item"><div class="check">✓</div><span>Groq API response checks</span></div>
+      <div class="test-item"><div class="check">✓</div><span>Channel delivery tests</span></div>
+      <div class="test-item"><div class="check">✓</div><span>Subscriber receipt verification</span></div>
+      <div class="test-item"><div class="check">✓</div><span>Production dry runs</span></div>
+      <div class="test-item"><div class="check">✓</div><span>Edge case handling</span></div>
+    </div>
+    <div style="margin-top:48px;" class="reveal">
+      <p style="color:var(--text-dim); font-size:14px; margin-bottom:20px; font-weight:500; letter-spacing:0.04em; text-transform:uppercase;">Prompt evolution:</p>
+      <div class="prompt-evolution">
+        <div class="prompt-v"><span class="prompt-v-num">V2</span><span>First real attempt</span></div>
+        <div class="prompt-v"><span class="prompt-v-num">V3</span><span>Added tone guidance</span></div>
+        <div class="prompt-v"><span class="prompt-v-num">V4</span><span>Format refinement</span></div>
+        <div class="prompt-v final"><span class="prompt-v-num">V4.5</span><span>Stabilized ✨</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ARCHITECTURE ─── -->
+<section id="architecture">
+  <div class="container">
+    <span class="section-label">Section 10 — Final Architecture</span>
+    <div class="two-col" style="align-items:start; gap:80px;">
+      <div>
+        <h2 class="reveal">The final shape<br>of Market Chai v1.0</h2>
+        <p class="lead reveal" style="transition-delay:0.1s; margin-bottom:40px;">Six components. One coherent product. Runs three times a day, every market day, without human intervention.</p>
+        <div class="arch-visual">
+          <div class="arch-node reveal">
+            <span class="arch-node-icon">📰</span>
+            <div class="arch-node-info"><h4>RSS Feeds</h4><p>Indian market news — live, continuous</p></div>
+          </div>
+          <div class="arch-connector"></div>
+          <div class="arch-node highlight-node reveal">
+            <span class="arch-node-icon">⚙️</span>
+            <div class="arch-node-info"><h4>n8n (Railway)</h4><p>Automation engine — the brain of the system</p></div>
+          </div>
+          <div class="arch-connector"></div>
+          <div class="arch-node reveal">
+            <span class="arch-node-icon">🧠</span>
+            <div class="arch-node-info"><h4>Groq AI</h4><p>llama-3.3-70b-versatile — the voice</p></div>
+          </div>
+          <div class="arch-connector"></div>
+          <div class="arch-node reveal">
+            <span class="arch-node-icon">🤖</span>
+            <div class="arch-node-info"><h4>@MarketChai_bot</h4><p>Invisible publisher — never seen, always working</p></div>
+          </div>
+          <div class="arch-connector"></div>
+          <div class="arch-node highlight-node reveal">
+            <span class="arch-node-icon">📣</span>
+            <div class="arch-node-info"><h4>@MarketChai</h4><p>Telegram Channel — the product subscribers love</p></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="arch-quote reveal" style="margin-top:16px;">
+          <blockquote>"We accidentally evolved from a Telegram bot into an AI-powered media channel."</blockquote>
+          <p style="color:var(--chai-light); font-size:13px; margin-top:12px;">— Chai Buddies Group</p>
+        </div>
+        <div style="margin-top:24px; display:flex; flex-direction:column; gap:14px;" class="reveal">
+          <div style="padding:20px 22px; background:var(--bg-3); border:1px solid var(--divider); border-radius:12px;">
+            <p style="color:var(--cream); font-size:13px; font-weight:600; margin-bottom:4px;">The bot became...</p>
+            <p style="color:var(--text-dim); font-size:13px;">The invisible infrastructure. No one sees it, no one interacts with it — but nothing works without it.</p>
+          </div>
+          <div style="padding:20px 22px; background:var(--bg-3); border:1px solid var(--divider); border-radius:12px;">
+            <p style="color:var(--saffron); font-size:13px; font-weight:600; margin-bottom:4px;">The channel became...</p>
+            <p style="color:var(--text-dim); font-size:13px;">The product. The brand. The thing subscribers join, share, and return to every market morning.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── DIFFERENTIATOR ─── -->
+<section id="differentiator">
+  <div class="container">
+    <span class="section-label">Section 11 — What Makes Us Different</span>
+    <h2 class="reveal">Every media product makes a choice<br>about who it serves.</h2>
+    <p class="lead reveal" style="transition-delay:0.1s">Market Chai made a deliberate one: the ordinary Indian comes first. Every other decision flows from that.</p>
+    <table class="diff-table reveal" style="margin-top:40px;">
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th class="col-old">Traditional Financial Media</th>
+          <th class="col-new">Market Chai</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Language</td>
+          <td class="col-old">Technical, jargon-first</td>
+          <td class="col-new">Simple, conversational</td>
+        </tr>
+        <tr>
+          <td>Who it serves</td>
+          <td class="col-old">Traders, professionals</td>
+          <td class="col-new">SIP investors, beginners</td>
+        </tr>
+        <tr>
+          <td>Information density</td>
+          <td class="col-old">Data overload</td>
+          <td class="col-new">Curated, insight-first</td>
+        </tr>
+        <tr>
+          <td>Primary intent</td>
+          <td class="col-old">Recommendations</td>
+          <td class="col-new">Education</td>
+        </tr>
+        <tr>
+          <td>Time commitment</td>
+          <td class="col-old">30-60 minutes daily</td>
+          <td class="col-new">2 minutes, 3 times a day</td>
+        </tr>
+        <tr>
+          <td>Tone</td>
+          <td class="col-old">Clinical, authoritative</td>
+          <td class="col-new">Warm, like a friend</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─── IMPACT ─── -->
+<section id="impact">
+  <div class="container">
+    <span class="section-label">Section 12 — Why This Matters</span>
+    <h2 class="reveal">Financial understanding<br>shouldn't be a privilege.</h2>
+    <p class="lead reveal" style="transition-delay:0.1s">India has hundreds of millions of investors who don't have access to a financial advisor, a well-placed uncle in the banking sector, or hours to spend on financial media every day.</p>
+    <div class="impact-grid">
+      <div class="impact-card reveal">
+        <span class="impact-icon">🏛️</span>
+        <h3>Democratizing Literacy</h3>
+        <p>Making market understanding available to anyone with a Telegram account — not just those with finance degrees or Bloomberg terminals.</p>
+      </div>
+      <div class="impact-card reveal" style="transition-delay:0.1s">
+        <span class="impact-icon">🎓</span>
+        <h3>Education Before Action</h3>
+        <p>The right order is: understand first, then invest. Market Chai is committed to building that understanding — not rushing you to a trade.</p>
+      </div>
+      <div class="impact-card reveal" style="transition-delay:0.15s">
+        <span class="impact-icon">🤝</span>
+        <h3>Confidence Before Commitment</h3>
+        <p>An informed investor is a confident investor. Confidence leads to better decisions, not just faster ones.</p>
+      </div>
+      <div class="impact-card reveal" style="transition-delay:0.2s">
+        <span class="impact-icon">🇮🇳</span>
+        <h3>India-First, Always</h3>
+        <p>Built for NSE, BSE, Sensex, NIFTY — the markets that actually matter to ordinary Indians, explained in their context.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ROADMAP ─── -->
+<section id="roadmap">
+  <div class="container">
+    <span class="section-label">Section 13 — Roadmap</span>
+    <h2 class="reveal">This is just version one.</h2>
+    <p class="lead reveal" style="transition-delay:0.1s">Market Chai v1.0 is the foundation. What gets built on top of it will be shaped by what subscribers ask for next.</p>
+    <div class="roadmap-track reveal" style="transition-delay:0.2s;">
+      <div class="roadmap-item">
+        <div class="roadmap-dot live"></div>
+        <span class="roadmap-item-num">v1.0</span>
+        <h4>Market Chai Live</h4>
+        <p>Three daily editions. Fully automated. AI-powered. Running now.</p>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-dot next"></div>
+        <span class="roadmap-item-num">v1.1</span>
+        <h4>NSE Holiday Checker</h4>
+        <p>Smart scheduling that respects Indian market holidays. No ghost editions.</p>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-dot next"></div>
+        <span class="roadmap-item-num">v1.2</span>
+        <h4>Weekend Brew</h4>
+        <p>A Saturday edition — deeper, slower, more reflective. The week in context.</p>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-dot future"></div>
+        <span class="roadmap-item-num">v2.0+</span>
+        <h4>Ask Market Chai</h4>
+        <p>An interactive bot where subscribers can ask questions and get instant, plain-language answers.</p>
+      </div>
+    </div>
+    <div style="margin-top:48px; padding:28px 32px; background:rgba(34,158,217,0.05); border:1px solid rgba(34,158,217,0.15); border-radius:14px;" class="reveal">
+      <p style="color:var(--teal); font-size:13px; font-weight:600; margin-bottom:8px;">Version 3.0 vision:</p>
+      <p style="color:var(--text-dim); font-size:14px; line-height:1.7;">A truly personalized market companion — one that knows your portfolio, your risk tolerance, and your goals. Not a robo-advisor. A financial literacy companion that meets you where you are.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── LAUNCH ─── -->
+<section id="launch">
+  <canvas id="confetti-canvas"></canvas>
+  <div class="container launch-inner">
+    <div class="launch-badge">🚀 Officially Live</div>
+    <h2 class="launch-title reveal">Market <span>Chai</span> v1.0<br>is here.</h2>
+    <p class="launch-sub reveal" style="transition-delay:0.1s">Join thousands of ordinary Indians getting smarter about money — one cup at a time.</p>
+    <div class="editions-row reveal" style="transition-delay:0.2s;">
+      <div class="edition-pill"><span>☕</span><span>Morning Chai</span></div>
+      <div class="edition-pill"><span>☀️</span><span>Afternoon Chai</span></div>
+      <div class="edition-pill"><span>🌇</span><span>Closing Bell</span></div>
+    </div>
+    <div class="launch-url reveal" style="transition-delay:0.25s;">
+      Join us at <a href="https://t.me/MarketChai" target="_blank">t.me/MarketChai</a>
+    </div>
+    <a href="https://t.me/MarketChai" target="_blank" class="launch-cta reveal" style="transition-delay:0.3s;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+      Join Market Chai — It's Free
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-status">🟢 Status: Live</div>
+  <p class="footer-line">Built with <strong>n8n</strong> · <strong>Groq AI</strong> · <strong>Telegram</strong> · <strong>Railway</strong> · and lots of chai ☕</p>
+  <p class="footer-line" style="margin-top:6px;">
+    <a href="https://t.me/MarketChai" target="_blank">@MarketChai</a> · Built by <strong>Chai Buddies Group</strong>
+  </p>
+  <p class="footer-line" style="margin-top:10px; font-size:12px; color:var(--text-faint);">Educational only. Not investment advice. Market Chai v1.0 · 2024</p>
+</footer>
+
+<script>
+// ─── PROGRESS BAR ───
+const bar = document.getElementById('progressBar');
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+  bar.style.width = pct + '%';
+});
+
+// ─── SCROLL REVEAL ───
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal, .tl-item, .build-step, .test-item, .stack-node').forEach(el => {
+  observer.observe(el);
+});
+
+// ─── STAGGERED BUILD STEPS ───
+const buildSteps = document.querySelectorAll('.build-step');
+const buildObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const allSteps = document.querySelectorAll('.build-step');
+      allSteps.forEach((s, i) => {
+        setTimeout(() => s.classList.add('visible'), i * 80);
+      });
+      buildObs.disconnect();
+    }
+  });
+}, { threshold: 0.1 });
+if (buildSteps[0]) buildObs.observe(buildSteps[0]);
+
+// ─── STAGGERED TEST ITEMS ───
+const testItems = document.querySelectorAll('.test-item');
+const testObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      testItems.forEach((s, i) => {
+        setTimeout(() => s.classList.add('visible'), i * 100);
+      });
+      testObs.disconnect();
+    }
+  });
+}, { threshold: 0.1 });
+if (testItems[0]) testObs.observe(testItems[0]);
+
+// ─── CONFETTI ───
+const canvas = document.getElementById('confetti-canvas');
+const ctx = canvas.getContext('2d');
+let confettiParticles = [];
+let confettiRunning = false;
+
+function resizeCanvas() {
+  canvas.width = canvas.parentElement.offsetWidth;
+  canvas.height = canvas.parentElement.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const COLORS = ['#E8A838', '#8B5E3C', '#F5E6D0', '#229ED9', '#C8AD96', '#4CAF72'];
+
+function spawnConfetti(n = 80) {
+  for (let i = 0; i < n; i++) {
+    confettiParticles.push({
+      x: Math.random() * canvas.width,
+      y: -10 - Math.random() * 60,
+      size: 5 + Math.random() * 8,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      vx: (Math.random() - 0.5) * 3,
+      vy: 2 + Math.random() * 4,
+      angle: Math.random() * Math.PI * 2,
+      spin: (Math.random() - 0.5) * 0.15,
+      alpha: 1,
+    });
+  }
+}
+
+function animateConfetti() {
+  if (!confettiRunning) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  confettiParticles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.angle += p.spin;
+    p.alpha -= 0.008;
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, p.alpha);
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.angle);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+    ctx.restore();
+  });
+  confettiParticles = confettiParticles.filter(p => p.alpha > 0 && p.y < canvas.height + 20);
+  if (confettiParticles.length > 0) {
+    requestAnimationFrame(animateConfetti);
+  } else {
+    confettiRunning = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}
+
+const launchObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting && !confettiRunning) {
+      confettiRunning = true;
+      spawnConfetti(120);
+      animateConfetti();
+      setTimeout(() => spawnConfetti(80), 800);
+      setTimeout(() => spawnConfetti(60), 1600);
+    }
+  });
+}, { threshold: 0.4 });
+launchObs.observe(document.getElementById('launch'));
+
+// ─── NAV ACTIVE STATES ───
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+const sectionObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => {
+        a.style.color = '';
+        a.style.background = '';
+      });
+      const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+      if (active && !active.classList.contains('nav-cta')) {
+        active.style.color = 'var(--cream)';
+        active.style.background = 'rgba(139,94,60,0.15)';
+      }
+    }
+  });
+}, { threshold: 0.4 });
+sections.forEach(s => sectionObs.observe(s));
+</script>
+</body>
+</html>
